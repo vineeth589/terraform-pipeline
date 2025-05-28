@@ -8,7 +8,7 @@ variables:
   tf_version: '1.6.0'
 
 steps:
-- task: UseTerraform@0
+- task: TerraformInstaller@1
   inputs:
     command: 'version'
     terraformVersion: $(tf_version)
