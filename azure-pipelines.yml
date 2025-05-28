@@ -1,0 +1,44 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  tf_version: '1.6.0'
+
+steps:
+- task: UseTerraform@0
+  inputs:
+    command: 'version'
+    terraformVersion: $(tf_version)
+
+- task: TerraformInstaller@1
+  inputs:
+    terraformVersion: $(tf_version)
+
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Init'
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: '<Your AzureRM Service Connection>'
+    backendAzureRmResourceGroupName: 'tfstate-rg'
+    backendAzureRmStorageAccountName: 'yourstorageacct'
+    backendAzureRmContainerName: 'tfstate'
+    backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Plan'
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: '<Your AzureRM Service Connection>'
+
+- task: TerraformTaskV4@4
+  displayName: 'Terraform Apply'
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: '<Your AzureRM Service Connection>'
+    args: '-auto-approve'
